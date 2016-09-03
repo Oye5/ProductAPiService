@@ -38,4 +38,20 @@ public class ProductServiceImpl implements ProductService {
 		return productDao.findAllProducts();
 	}
 
+	@Override
+	public void deleteProduct(Product product) {
+		productDao.deleteProduct(product);
+
+	}
+
+	@Override
+	public List<Product> getProductByProductId(String productId) {
+		return productDao.getProductByProductId(productId);
+	}
+
+	@Override
+	public List<Product> getProductsByCategoryId(int categoryId) {
+		return productDao.getProductsByCategoryId(categoryId);
+	}
+
 }

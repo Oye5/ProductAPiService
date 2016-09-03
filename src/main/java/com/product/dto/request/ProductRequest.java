@@ -14,6 +14,9 @@ public class ProductRequest {
 	private String sellerId;
 	private String createdAt;
 	private String updatedAt;
+	private GeoRequest geo;
+	private SellerRequest seller;
+	private ImageRequest images;
 
 	public String getProductId() {
 		return productId;
@@ -67,6 +70,18 @@ public class ProductRequest {
 		return updatedAt;
 	}
 
+	public GeoRequest getGeo() {
+		return geo;
+	}
+
+	public SellerRequest getSeller() {
+		return seller;
+	}
+
+	public ImageRequest getImages() {
+		return images;
+	}
+
 	public void setProductId(String productId) {
 		this.productId = productId;
 	}
@@ -117,6 +132,18 @@ public class ProductRequest {
 
 	public void setUpdatedAt(String updatedAt) {
 		this.updatedAt = updatedAt;
+	}
+
+	public void setGeo(GeoRequest geo) {
+		this.geo = geo;
+	}
+
+	public void setSeller(SellerRequest seller) {
+		this.seller = seller;
+	}
+
+	public void setImages(ImageRequest images) {
+		this.images = images;
 	}
 
 }

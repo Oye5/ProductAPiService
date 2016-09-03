@@ -8,6 +8,8 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.product.model.ProductStatus;
+
 public class AbstractDao<PK extends Serializable, T> {
 
 	private final Class<T> persistentClass;
@@ -51,11 +53,4 @@ public class AbstractDao<PK extends Serializable, T> {
 
 	}
 
-	// protected Criteria createEntityCriteriaWithCondition(double lat , double longitude) {
-	//
-	// Criteria cr=getSession().createCriteria(persistentClass);
-	// cr.add(Restrictions.between("lattitude", lat, lat+2.00023));
-	// cr.add(Restrictions.between("longitude", longitude, longitude+2.00023));
-	// return cr;
-	// }
 }

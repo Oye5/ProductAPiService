@@ -3,6 +3,7 @@ package com.product.model;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -11,7 +12,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.Size;
+
+import org.hibernate.annotations.Cascade;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /***
  *
@@ -29,7 +35,7 @@ public class Product implements Serializable {
 	@Id
 	@Column(name = "product_id")
 	@Size(max = 50)
-	private String product_id;
+	private String productId;
 
 	@Column(name = "description")
 	@Size(max = 2048)
@@ -37,7 +43,7 @@ public class Product implements Serializable {
 
 	@Column(name = "display_name")
 	@Size(max = 45)
-	private String display_name;
+	private String displayName;
 
 	@Column(name = "category_id")
 	private int categoryId;
@@ -61,32 +67,32 @@ public class Product implements Serializable {
 	@Size(max = 45)
 	private String condition;
 
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "geo_id")
 	private Geo geo;
 
-	@ManyToOne
+	@ManyToOne(cascade = CascadeType.DETACH)
 	@JoinColumn(name = "seller_id")
-	private User userId;
+	private User user;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created_at")
-	private Date created_at;
+	private Date createdAt;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "updated_at")
-	private Date updated_at;
+	private Date updatedAt;
 
-	public String getProduct_id() {
-		return product_id;
+	public String getProductId() {
+		return productId;
 	}
 
 	public String getDescription() {
 		return description;
 	}
 
-	public String getDisplay_name() {
-		return display_name;
+	public String getDisplayName() {
+		return displayName;
 	}
 
 	public int getCategoryId() {
@@ -113,24 +119,32 @@ public class Product implements Serializable {
 		return condition;
 	}
 
-	public Date getCreated_at() {
-		return created_at;
+	public Geo getGeo() {
+		return geo;
 	}
 
-	public Date getUpdated_at() {
-		return updated_at;
+	public User getUser() {
+		return user;
 	}
 
-	public void setProduct_id(String product_id) {
-		this.product_id = product_id;
+	public Date getCreatedAt() {
+		return createdAt;
+	}
+
+	public Date getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setProductId(String productId) {
+		this.productId = productId;
 	}
 
 	public void setDescription(String description) {
 		this.description = description;
 	}
 
-	public void setDisplay_name(String display_name) {
-		this.display_name = display_name;
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
 	}
 
 	public void setCategoryId(int categoryId) {
@@ -157,28 +171,20 @@ public class Product implements Serializable {
 		this.condition = condition;
 	}
 
-	public void setCreated_at(Date created_at) {
-		this.created_at = created_at;
-	}
-
-	public void setUpdated_at(Date updated_at) {
-		this.updated_at = updated_at;
-	}
-
-	public Geo getGeo() {
-		return geo;
-	}
-
-	public User getUserId() {
-		return userId;
-	}
-
 	public void setGeo(Geo geo) {
 		this.geo = geo;
 	}
 
-	public void setUserId(User userId) {
-		this.userId = userId;
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	public void setCreatedAt(Date createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public void setUpdatedAt(Date updatedAt) {
+		this.updatedAt = updatedAt;
 	}
 
 }

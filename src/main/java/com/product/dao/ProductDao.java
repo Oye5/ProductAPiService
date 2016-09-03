@@ -13,4 +13,11 @@ public interface ProductDao {
 	void updateProduct(Product product);
 
 	List<Product> findAllProducts();
+
+	void deleteProduct(Product product);
+	
+	List<Product> getProductByProductId(String productId);
+	
+	List<Product> getProductsByCategoryId(int categoryId);
+	
 }
