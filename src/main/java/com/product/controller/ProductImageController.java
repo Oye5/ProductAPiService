@@ -49,7 +49,6 @@ public class ProductImageController {
 				String fileName = sb.toString() + ".jpg";
 
 				String keyName = amazonS3Util.generateKey() + fileName;
-				System.out.println("====keyname====" + keyName);
 				// upload file to amazon
 				try {
 					amazonS3Util.uploadFileToS3(keyName, file.getInputStream(), file.getOriginalFilename());
