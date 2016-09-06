@@ -1,7 +1,9 @@
 package com.product.dto.request;
 
-public class ProductRequest {
-	private String productId;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ProductSaveRequest {
 	private String description;
 	private String displayName;
 	private int categoryId;
@@ -10,17 +12,12 @@ public class ProductRequest {
 	private String currency;
 	private String status;
 	private String condition;
-	private int geoId;
 	private String sellerId;
 	private String createdAt;
 	private String updatedAt;
-	private GeoRequest geo;
-	private SellerRequest seller;
-	private ImageRequest images;
-
-	public String getProductId() {
-		return productId;
-	}
+	private double lattitude;
+	private double longitude;
+	private List<String> imageList = new ArrayList<String>();
 
 	public String getDescription() {
 		return description;
@@ -54,10 +51,6 @@ public class ProductRequest {
 		return condition;
 	}
 
-	public int getGeoId() {
-		return geoId;
-	}
-
 	public String getSellerId() {
 		return sellerId;
 	}
@@ -70,20 +63,16 @@ public class ProductRequest {
 		return updatedAt;
 	}
 
-	public GeoRequest getGeo() {
-		return geo;
+	public double getLattitude() {
+		return lattitude;
 	}
 
-	public SellerRequest getSeller() {
-		return seller;
+	public double getLongitude() {
+		return longitude;
 	}
 
-	public ImageRequest getImages() {
-		return images;
-	}
-
-	public void setProductId(String productId) {
-		this.productId = productId;
+	public List<String> getImageList() {
+		return imageList;
 	}
 
 	public void setDescription(String description) {
@@ -118,10 +107,6 @@ public class ProductRequest {
 		this.condition = condition;
 	}
 
-	public void setGeoId(int geoId) {
-		this.geoId = geoId;
-	}
-
 	public void setSellerId(String sellerId) {
 		this.sellerId = sellerId;
 	}
@@ -134,16 +119,16 @@ public class ProductRequest {
 		this.updatedAt = updatedAt;
 	}
 
-	public void setGeo(GeoRequest geo) {
-		this.geo = geo;
+	public void setLattitude(double lattitude) {
+		this.lattitude = lattitude;
 	}
 
-	public void setSeller(SellerRequest seller) {
-		this.seller = seller;
+	public void setLongitude(double longitude) {
+		this.longitude = longitude;
 	}
 
-	public void setImages(ImageRequest images) {
-		this.images = images;
+	public void setImageList(List<String> imageList) {
+		this.imageList = imageList;
 	}
 
 }

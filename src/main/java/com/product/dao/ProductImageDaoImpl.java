@@ -19,4 +19,9 @@ public class ProductImageDaoImpl extends AbstractDao<String, ProductImages> impl
 
 	}
 
+	@Override
+	public void deleteProductImages(String productId) {
+		deleteProductImagesBasedOnProductId(productId);
+	}
+
 }

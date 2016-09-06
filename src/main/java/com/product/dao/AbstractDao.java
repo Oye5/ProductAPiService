@@ -35,8 +35,8 @@ public class AbstractDao<PK extends Serializable, T> {
 		getSession().persist(entity);
 	}
 
-	public Long save(T entity) {
-		return (Long) getSession().save(entity);
+	public String save(T entity) {
+		return (String) getSession().save(entity);
 
 	}
 
@@ -53,4 +53,17 @@ public class AbstractDao<PK extends Serializable, T> {
 
 	}
 
+	protected void deleteProductStatusBasedOnProductId(String productId) {
+		String hql = "delete from ProductStatus where productId= :productId";
+		getSession().createQuery(hql).setString("productId", productId).executeUpdate();
+		// getSession().update(entity);
+
+	}
+
+	protected void deleteProductImagesBasedOnProductId(String productId) {
+		String hql = "delete from ProductImages where productId= :productId";
+		getSession().createQuery(hql).setString("productId", productId).executeUpdate();
+		// getSession().update(entity);
+
+	}
 }

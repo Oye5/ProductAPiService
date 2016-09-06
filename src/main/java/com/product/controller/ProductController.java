@@ -7,6 +7,7 @@ import io.searchbox.core.SearchResult;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import org.elasticsearch.common.unit.DistanceUnit;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -23,7 +24,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.product.dto.request.ProductRequest;
+import com.product.dto.request.ProductSaveRequest;
+import com.product.dto.request.ProductUpdateRequest;
 import com.product.dto.response.GenericResponse;
 import com.product.dto.response.ProductStatusResponse;
 import com.product.model.Geo;
@@ -31,6 +33,7 @@ import com.product.model.Product;
 import com.product.model.ProductImages;
 import com.product.model.ProductStatus;
 import com.product.model.User;
+import com.product.service.GeoService;
 import com.product.service.ProductImageService;
 import com.product.service.ProductService;
 import com.product.service.ProductStatusService;
@@ -51,6 +54,9 @@ public class ProductController {
 
 	@Autowired
 	ProductStatusService productStatusService;
+
+	@Autowired
+	GeoService geoService;
 
 	private Product product;
 	private Geo geo;
@@ -83,37 +89,54 @@ public class ProductController {
 	}
 
 	/**
+	 * save product
+	 * 
 	 * @param productRequest
 	 * @return
 	 */
 	@RequestMapping(value = "/saveProducts", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> saveProducts(@RequestBody ProductRequest productRequest) {
+	public ResponseEntity<?> saveProducts(@RequestBody ProductSaveRequest productSaveRequest) {
 		GenericResponse response = new GenericResponse();
 
 		try {
 			product = new Product();
 			geo = new Geo();
 			user = new User();
-			if (productRequest.getGeoId() != 0) {
-				product.setGeo(geo);
-			}
-			if (productRequest.getSellerId() != null) {
+			geo.setGeo_id(UUID.randomUUID().toString());
+			geo.setLattitude(productSaveRequest.getLattitude());
+			geo.setLongitude(productSaveRequest.getLongitude());
+			// if (productRequest.getGeoId() != 0) {
+			// geo.setGeo_id(productRequest.getGeoId());
+			// product.setGeo(geo);
+			// }
+			geoService.saveGeoDetails(geo);
+			product.setGeo(geo);
+			if (productSaveRequest.getSellerId() != null) {
+				user.setUserId(productSaveRequest.getSellerId());
 				product.setUser(user);
 			}
-			user.setUserId(productRequest.getSellerId());
-			geo.setGeo_id(productRequest.getGeoId());
-			product.setCategoryId(productRequest.getCategoryId());
-			product.setCondition(productRequest.getCondition());
-			product.setCurrency(productRequest.getCurrency());
-			product.setDescription(productRequest.getDescription());
-			product.setDisplayName(productRequest.getDisplayName());
-			product.setLanguageCode(productRequest.getLanguageCode());
-			product.setPrice(productRequest.getPrice());
-			product.setProductId(productRequest.getProductId());
-			product.setStatus(productRequest.getStatus());
+
+			product.setCategoryId(productSaveRequest.getCategoryId());
+			product.setCondition(productSaveRequest.getCondition());
+			product.setCurrency(productSaveRequest.getCurrency());
+			product.setDescription(productSaveRequest.getDescription());
+			product.setDisplayName(productSaveRequest.getDisplayName());
+			product.setLanguageCode(productSaveRequest.getLanguageCode());
+			product.setPrice(productSaveRequest.getPrice());
+			product.setProductId(UUID.randomUUID().toString());
+			product.setStatus(productSaveRequest.getStatus());
 			product.setCreatedAt(new Date());
 			product.setUpdatedAt(new Date());
-			productService.saveProduct(product);
+			String productId = productService.saveProduct(product);
+			Product p = new Product();
+			p.setProductId(productId);
+			// save image
+			for (int i = 0; i < productSaveRequest.getImageList().size(); i++) {
+				ProductImages productImages = new ProductImages();
+				productImages.setId(productSaveRequest.getImageList().get(i).toString());
+				productImages.setProductId(p);
+				productImageService.saveUploadedImage(productImages);
+			}
 
 			// Index to elastic
 			JestClient client = ElasticUtil.getClient();
@@ -127,7 +150,8 @@ public class ProductController {
 		} catch (org.springframework.dao.DataIntegrityViolationException e) {
 			e.printStackTrace();
 			response.setCode("E001");
-			response.setMessage("please provde unique ProductId. given productId is already registered");
+			// response.setMessage("please provde unique ProductId. given productId is already registered");
+			response.setMessage(e.getMessage());
 			return new ResponseEntity<GenericResponse>(response, HttpStatus.CONFLICT);
 		} catch (org.apache.http.conn.HttpHostConnectException ex) {
 			ex.printStackTrace();
@@ -144,7 +168,7 @@ public class ProductController {
 	}
 
 	/**
-	 * @param latitude
+	 * @param lattitude
 	 * @param longitude
 	 * @param distance_type
 	 * @param num_results
@@ -195,13 +219,20 @@ public class ProductController {
 	 * @param productId
 	 * @return
 	 */
-
 	@RequestMapping(value = "/v1/{productId}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<GenericResponse> deleteProducts(@PathVariable("productId") String productId) {
 		GenericResponse response = new GenericResponse();
 		try {
 			Product product = new Product();
 			product.setProductId(productId);
+
+			// delete product_status table on the basis of productId
+			productStatusService.deleteProductStatus(productId);
+
+			// delete product_images table based on productID
+			productImageService.deleteProductImages(productId);
+
+			// delect product from product table
 			productService.deleteProduct(product);
 
 			// Delete from Elastic Index
@@ -225,11 +256,11 @@ public class ProductController {
 	 * upadate product details
 	 * 
 	 * @param productId
-	 * @param productRequest
+	 * @param productUpdateRequest
 	 * @return
 	 */
 	@RequestMapping(value = "/v1/{productId}/update", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<GenericResponse> updateProducts(@PathVariable("productId") String productId, @RequestBody ProductRequest productRequest) {
+	public ResponseEntity<GenericResponse> updateProducts(@PathVariable("productId") String productId, @RequestBody ProductUpdateRequest productUpdateRequest) {
 		GenericResponse response = new GenericResponse();
 		try {
 			Product product = null;
@@ -243,34 +274,34 @@ public class ProductController {
 			}
 
 			product.setProductId(productId);
-			product.setCategoryId(productRequest.getCategoryId());
-			product.setCondition(productRequest.getCondition());
+			product.setCategoryId(productUpdateRequest.getCategoryId());
+			product.setCondition(productUpdateRequest.getCondition());
 			// product.setCreatedAt(createdAt);
-			product.setCurrency(productRequest.getCurrency());
-			product.setDescription(productRequest.getDescription());
-			product.setDisplayName(productRequest.getDisplayName());
+			product.setCurrency(productUpdateRequest.getCurrency());
+			product.setDescription(productUpdateRequest.getDescription());
+			product.setDisplayName(productUpdateRequest.getDisplayName());
 			geo = new Geo();
 			geo.setGeo_id(product.getGeo().getGeo_id());
-			geo.setCity(productRequest.getGeo().getCity());
-			geo.setCountryCode(productRequest.getGeo().getCountry_code());
-			geo.setDistance(productRequest.getGeo().getDistance());
-			geo.setLattitude(productRequest.getGeo().getLat());
-			geo.setLongitude(productRequest.getGeo().getLongitude());
-			geo.setZipCode(productRequest.getGeo().getZip_code());
+			geo.setCity(productUpdateRequest.getGeo().getCity());
+			geo.setCountryCode(productUpdateRequest.getGeo().getCountry_code());
+			geo.setLattitude(productUpdateRequest.getGeo().getLat());
+			geo.setLongitude(productUpdateRequest.getGeo().getLongitude());
+			geo.setZipCode(productUpdateRequest.getGeo().getZip_code());
+			geoService.updateGeo(geo);
 
 			product.setGeo(geo);
-			product.setLanguageCode(productRequest.getLanguageCode());
-			product.setPrice(productRequest.getPrice());
-			product.setStatus(productRequest.getStatus());
+			product.setLanguageCode(productUpdateRequest.getLanguageCode());
+			product.setPrice(productUpdateRequest.getPrice());
+			product.setStatus(productUpdateRequest.getStatus());
 			product.setUpdatedAt(new Date());
 			user = new User();
-			user.setUserId(productRequest.getSeller().getId());
+			user.setUserId(productUpdateRequest.getSeller().getId());
 			product.setUser(user);
 
 			// set image details to Imageclass and save to database
 			ProductImages productImages = new ProductImages();
-			productImages.setId(productRequest.getImages().getId());
-			productImages.setUrl(productRequest.getImages().getUrl());
+			productImages.setId(productUpdateRequest.getImages().getId());
+			productImages.setUrl(productUpdateRequest.getImages().getUrl());
 			productImages.setProductId(product);
 			try {
 				productImageService.updateImageDetails(productImages);
@@ -330,6 +361,8 @@ public class ProductController {
 	}
 
 	/**
+	 * get similar product
+	 * 
 	 * @param productId
 	 * @param numResults
 	 * @return
@@ -355,4 +388,35 @@ public class ProductController {
 		}
 
 	}
+
+	/**
+	 * search product by categoty name
+	 * 
+	 * @param query
+	 * @return
+	 */
+	@RequestMapping(value = "/v1/searchProducts", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<Product>> viewItems(@RequestParam("q") String query) {
+
+		List<Product> product;
+		try {
+			// Creating Elastic Client
+			JestClient client = ElasticUtil.getClient();
+			SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+
+			searchSourceBuilder.query(QueryBuilders.queryStringQuery(query));
+			System.out.println("Elastic query " + searchSourceBuilder.toString());
+
+			Search search = new Search.Builder(searchSourceBuilder.toString()).addIndex("product").addType("Product").build();
+
+			SearchResult result = client.execute(search);
+			product = result.getSourceAsObjectList(Product.class);
+			return new ResponseEntity<List<Product>>(product, HttpStatus.OK);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return new ResponseEntity<List<Product>>(HttpStatus.UNPROCESSABLE_ENTITY);
+		}
+
+	}
+
 }

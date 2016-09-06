@@ -54,7 +54,7 @@ public class ProductImageController {
 					amazonS3Util.uploadFileToS3(keyName, file.getInputStream(), file.getOriginalFilename());
 				} catch (Exception e) {
 					response.setCode("E001");
-					response.setMessage("failed to upload file");
+					response.setMessage("failed to upload file: " + e.getMessage());
 					return new ResponseEntity<GenericResponse>(response, HttpStatus.OK);
 				}
 				ProductImages productImages = new ProductImages();

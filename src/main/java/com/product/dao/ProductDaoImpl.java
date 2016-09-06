@@ -13,8 +13,7 @@ public class ProductDaoImpl extends AbstractDao<Long, Product> implements Produc
 
 	@Override
 	public String saveProduct(Product product) {
-		persist(product);
-		return "success";
+		return save(product);
 	}
 
 	@Override

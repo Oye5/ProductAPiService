@@ -20,4 +20,10 @@ public class ProductStatusServiceImpl implements ProductStatusService {
 		return productStatusDao.getProductStatus(productId);
 	}
 
+	@Override
+	public void deleteProductStatus(String productId) {
+		productStatusDao.deleteProductStatus(productId);
+		
+	}
+
 }

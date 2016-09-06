@@ -26,4 +26,10 @@ public class ProductImageServiceImpl implements ProductImageService {
 
 	}
 
+	@Override
+	public void deleteProductImages(String productId) {
+		productImageDao.deleteProductImages(productId);
+		
+	}
+
 }

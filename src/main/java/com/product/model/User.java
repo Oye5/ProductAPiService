@@ -8,6 +8,9 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /***
  *
  */
@@ -83,11 +86,14 @@ public class User implements Serializable {
 	public boolean isActive() {
 		return active;
 	}
-
+	@JsonIgnore
+	@JsonProperty(value = "unreadNotifications")	
 	public int getUnreadNotifications() {
 		return unreadNotifications;
 	}
 
+	@JsonIgnore
+	@JsonProperty(value = "unreadMessages")	
 	public int getUnreadMessages() {
 		return unreadMessages;
 	}

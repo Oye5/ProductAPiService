@@ -18,7 +18,7 @@ public class Geo implements Serializable {
 
 	@Id
 	@Column(name = "geo_id")
-	private int geo_id;
+	private String geo_id;
 
 	@Column(name = "lat")
 	private double lattitude;
@@ -35,10 +35,7 @@ public class Geo implements Serializable {
 	@Column(name = "zip_code")
 	private String zipCode;
 
-	@Column(name = "distance")
-	private double distance;
-
-	public int getGeo_id() {
+	public String getGeo_id() {
 		return geo_id;
 	}
 
@@ -62,11 +59,7 @@ public class Geo implements Serializable {
 		return zipCode;
 	}
 
-	public double getDistance() {
-		return distance;
-	}
-
-	public void setGeo_id(int geo_id) {
+	public void setGeo_id(String geo_id) {
 		this.geo_id = geo_id;
 	}
 
@@ -88,10 +81,6 @@ public class Geo implements Serializable {
 
 	public void setZipCode(String zipCode) {
 		this.zipCode = zipCode;
-	}
-
-	public void setDistance(double distance) {
-		this.distance = distance;
 	}
 
 }

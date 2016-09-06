@@ -67,11 +67,13 @@ public class Product implements Serializable {
 	@Size(max = 45)
 	private String condition;
 
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = CascadeType.DETACH)
+    //@ManyToOne
 	@JoinColumn(name = "geo_id")
 	private Geo geo;
 
 	@ManyToOne(cascade = CascadeType.DETACH)
+    //@ManyToOne
 	@JoinColumn(name = "seller_id")
 	private User user;
 

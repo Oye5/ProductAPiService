@@ -18,4 +18,10 @@ public class ProductStatusDaoImpl extends AbstractDao<Long, ProductStatus> imple
 		return (ProductStatus) criteria.uniqueResult();
 	}
 
+	@Override
+	public void deleteProductStatus(String productId) {
+		// delete(entity);
+		deleteProductStatusBasedOnProductId(productId);
+	}
+
 }
