@@ -10,6 +10,7 @@ import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 
@@ -32,24 +33,18 @@ public class AmazonS3Util {
 		ObjectMetadata meta = new ObjectMetadata();
 		meta.addUserMetadata("name", fileName);
 
-		s3client.putObject(new PutObjectRequest(bucketName, folder + "/" + key, ins, meta));
-
+		s3client.putObject(new PutObjectRequest(bucketName, folder + "/" + key, ins, meta).withCannedAcl(CannedAccessControlList.PublicRead));
+		// .withCannedAcl(CannedAccessControlList.PublicRead));
 		return key;
 	}
 
-	public String generateKey() {
-		String alphabet = "abcdefghijklmnopqrstuvwxyz";
-		int N = alphabet.length();
-		Random r = new Random();
-		String result = "";
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 3; j++) {
-				result += alphabet.charAt(r.nextInt(N));
-
-			}
-			result = result + "/";
-		}
-		return result;
+	public String generateKey(String key) {
+		String x = key;
+		String y = x.substring(0, 2) + "/" + x.substring(2, x.length());
+		String z = y.substring(0, 5) + "/" + x.substring(4, x.length());
+		String a = z.substring(0, 8) + "/" + x.substring(6, x.length());
+		String b = a.substring(0, 11) + "/" + x.substring(8, x.length());
+		return b;
 
 	}
 }

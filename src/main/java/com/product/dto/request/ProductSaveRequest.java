@@ -8,7 +8,7 @@ public class ProductSaveRequest {
 	private String displayName;
 	private int categoryId;
 	private String languageCode;
-	private int price;
+	private double price;
 	private String currency;
 	private String status;
 	private String condition;
@@ -17,7 +17,21 @@ public class ProductSaveRequest {
 	private String updatedAt;
 	private double lattitude;
 	private double longitude;
+	private String country;
+
+	private String address;
+
+	private String zipCode;
+
+	private String state;
+
+	private String warranty;
+
+	private String brand;
+
 	private List<String> imageList = new ArrayList<String>();
+
+	private String imageInformation;
 
 	public String getDescription() {
 		return description;
@@ -35,7 +49,7 @@ public class ProductSaveRequest {
 		return languageCode;
 	}
 
-	public int getPrice() {
+	public double getPrice() {
 		return price;
 	}
 
@@ -91,7 +105,7 @@ public class ProductSaveRequest {
 		this.languageCode = languageCode;
 	}
 
-	public void setPrice(int price) {
+	public void setPrice(double price) {
 		this.price = price;
 	}
 
@@ -129,6 +143,62 @@ public class ProductSaveRequest {
 
 	public void setImageList(List<String> imageList) {
 		this.imageList = imageList;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public String getZipCode() {
+		return zipCode;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public String getWarranty() {
+		return warranty;
+	}
+
+	public String getBrand() {
+		return brand;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public void setZipCode(String zipCode) {
+		this.zipCode = zipCode;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public void setWarranty(String warranty) {
+		this.warranty = warranty;
+	}
+
+	public void setBrand(String brand) {
+		this.brand = brand;
+	}
+
+	public String getImageInformation() {
+		return imageInformation;
+	}
+
+	public void setImageInformation(String imageInformation) {
+		this.imageInformation = imageInformation;
 	}
 
 }

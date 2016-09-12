@@ -1,5 +1,7 @@
 package com.product.dao;
 
+import java.util.List;
+
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
@@ -22,6 +24,20 @@ public class ProductStatusDaoImpl extends AbstractDao<Long, ProductStatus> imple
 	public void deleteProductStatus(String productId) {
 		// delete(entity);
 		deleteProductStatusBasedOnProductId(productId);
+	}
+
+	@Override
+	public void saveProductStatus(ProductStatus productStatus) {
+		persist(productStatus);
+
+	}
+
+	@Override
+	public List<ProductStatus> getFavouriteProducts() {
+		Criteria criteria = createEntityCriteria();
+		criteria.add(Restrictions.eq("favourites", true));
+		System.out.println("criteria=====" + criteria);
+		return (List<ProductStatus>) criteria.list();
 	}
 
 }

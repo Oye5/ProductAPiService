@@ -1,7 +1,6 @@
 package com.product.model;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -10,14 +9,10 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 
-import org.hibernate.annotations.Cascade;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.elasticsearch.common.geo.GeoPoint;
 
 /***
  *
@@ -53,7 +48,7 @@ public class Product implements Serializable {
 	private String languageCode;
 
 	@Column(name = "price")
-	private int price;
+	private double price;
 
 	@Column(name = "currency")
 	@Size(max = 45)
@@ -68,22 +63,52 @@ public class Product implements Serializable {
 	private String condition;
 
 	@ManyToOne(cascade = CascadeType.DETACH)
-    //@ManyToOne
+	// @ManyToOne
 	@JoinColumn(name = "geo_id")
 	private Geo geo;
 
 	@ManyToOne(cascade = CascadeType.DETACH)
-    //@ManyToOne
+	// @ManyToOne
 	@JoinColumn(name = "seller_id")
 	private User user;
 
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "created_at")
-	private Date createdAt;
+	// @Temporal(TemporalType.TIMESTAMP)
+	// @Column(name = "created_at")
+	// private Date createdAt;
 
-	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "created_at")
+	private String createdAt;
+
+	@Column(name = "image_information", length = 200)
+	private String imageInformation;
+
+	// @Temporal(TemporalType.TIMESTAMP)
+	// @Column(name = "updated_at")
+	// private Date updatedAt;
+
 	@Column(name = "updated_at")
-	private Date updatedAt;
+	private String updatedAt;
+
+	@Column(name = "country")
+	private String country;
+
+	@Column(name = "address")
+	private String address;
+
+	@Column(name = "zip_code")
+	private String zipCode;
+
+	@Column(name = "state")
+	private String state;
+
+	@Column(name = "warranty")
+	private String warranty;
+
+	@Column(name = "brand")
+	private String brand;
+
+	@Transient
+	private GeoPoint location;
 
 	public String getProductId() {
 		return productId;
@@ -105,12 +130,16 @@ public class Product implements Serializable {
 		return languageCode;
 	}
 
-	public int getPrice() {
+	public String getCurrency() {
+		return currency;
+	}
+
+	public double getPrice() {
 		return price;
 	}
 
-	public String getCurrency() {
-		return currency;
+	public void setPrice(double price) {
+		this.price = price;
 	}
 
 	public String getStatus() {
@@ -127,14 +156,6 @@ public class Product implements Serializable {
 
 	public User getUser() {
 		return user;
-	}
-
-	public Date getCreatedAt() {
-		return createdAt;
-	}
-
-	public Date getUpdatedAt() {
-		return updatedAt;
 	}
 
 	public void setProductId(String productId) {
@@ -157,10 +178,6 @@ public class Product implements Serializable {
 		this.languageCode = languageCode;
 	}
 
-	public void setPrice(int price) {
-		this.price = price;
-	}
-
 	public void setCurrency(String currency) {
 		this.currency = currency;
 	}
@@ -181,12 +198,80 @@ public class Product implements Serializable {
 		this.user = user;
 	}
 
-	public void setCreatedAt(Date createdAt) {
+	public String getCreatedAt() {
+		return createdAt;
+	}
+
+	public String getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setCreatedAt(String createdAt) {
 		this.createdAt = createdAt;
 	}
 
-	public void setUpdatedAt(Date updatedAt) {
+	public void setUpdatedAt(String updatedAt) {
 		this.updatedAt = updatedAt;
+	}
+
+	public void setLocation(GeoPoint location) {
+		this.location = location;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public String getZipCode() {
+		return zipCode;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public String getWarranty() {
+		return warranty;
+	}
+
+	public String getBrand() {
+		return brand;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public void setZipCode(String zipCode) {
+		this.zipCode = zipCode;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public void setWarranty(String warranty) {
+		this.warranty = warranty;
+	}
+
+	public void setBrand(String brand) {
+		this.brand = brand;
+	}
+
+	public String getImageInformation() {
+		return imageInformation;
+	}
+
+	public void setImageInformation(String imageInformation) {
+		this.imageInformation = imageInformation;
 	}
 
 }

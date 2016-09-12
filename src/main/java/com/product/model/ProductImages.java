@@ -19,13 +19,15 @@ public class ProductImages implements Serializable {
 	@Column(name = "id")
 	private String id;
 
-	@Column(name = "url")
-	@Size(max = 255)
+	@Column(name = "url", length = 255)
 	private String url;
 
 	@ManyToOne
 	@JoinColumn(name = "product_id")
 	private Product productId;
+
+	@Column(name = "thumb_nail", length = 255)
+	private String thumbNail;
 
 	public String getId() {
 		return id;
@@ -49,6 +51,14 @@ public class ProductImages implements Serializable {
 
 	public void setProductId(Product productId) {
 		this.productId = productId;
+	}
+
+	public String getThumbNail() {
+		return thumbNail;
+	}
+
+	public void setThumbNail(String thumbNail) {
+		this.thumbNail = thumbNail;
 	}
 
 }

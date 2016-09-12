@@ -27,7 +27,7 @@ public class ProductStatus implements Serializable {
 	private int views;
 
 	@Column(name = "favs")
-	private int favourites;
+	private boolean favourites;
 
 	@Column(name = "offers")
 	private int offers;
@@ -44,7 +44,7 @@ public class ProductStatus implements Serializable {
 		return views;
 	}
 
-	public int getFavourites() {
+	public boolean isFavourites() {
 		return favourites;
 	}
 
@@ -64,7 +64,7 @@ public class ProductStatus implements Serializable {
 		this.views = views;
 	}
 
-	public void setFavourites(int favourites) {
+	public void setFavourites(boolean favourites) {
 		this.favourites = favourites;
 	}
 

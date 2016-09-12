@@ -6,7 +6,6 @@ public class GeoRequest {
 	private String country_code;
 	private String city;
 	private String zip_code;
-	private double distance;
 
 	public double getLat() {
 		return lat;
@@ -28,10 +27,6 @@ public class GeoRequest {
 		return zip_code;
 	}
 
-	public double getDistance() {
-		return distance;
-	}
-
 	public void setLat(double lat) {
 		this.lat = lat;
 	}
@@ -50,10 +45,6 @@ public class GeoRequest {
 
 	public void setZip_code(String zip_code) {
 		this.zip_code = zip_code;
-	}
-
-	public void setDistance(double distance) {
-		this.distance = distance;
 	}
 
 }

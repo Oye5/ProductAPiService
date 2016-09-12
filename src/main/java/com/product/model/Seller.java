@@ -21,7 +21,7 @@ public class Seller implements Serializable {
 
 	@Id
 	@Column(name = "id")
-	private int id;
+	private String id;
 
 	// @Column(name = "user_id")
 	// @Size(max = 45)
@@ -29,7 +29,6 @@ public class Seller implements Serializable {
 
 	@ManyToOne
 	@JoinColumn(name = "user_id")
-	@Size(max = 45)
 	private User userId;
 
 	@Column(name = "first_name")
@@ -57,12 +56,13 @@ public class Seller implements Serializable {
 	private String profilePic;
 
 	@Column(name = "active")
-	@Size(max = 4)
 	private int active;
 
-	public int getId() {
-		return id;
-	}
+	@Column(name = "banned")
+	private String banned;
+
+	@Column(name = "status")
+	private String status;
 
 	public User getUserId() {
 		return userId;
@@ -96,7 +96,11 @@ public class Seller implements Serializable {
 		return active;
 	}
 
-	public void setId(int id) {
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -130,6 +134,22 @@ public class Seller implements Serializable {
 
 	public void setActive(int active) {
 		this.active = active;
+	}
+
+	public String getBanned() {
+		return banned;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setBanned(String banned) {
+		this.banned = banned;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 }

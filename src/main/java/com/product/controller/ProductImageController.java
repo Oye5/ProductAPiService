@@ -46,9 +46,10 @@ public class ProductImageController {
 					sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
 				}
 
-				String fileName = sb.toString() + ".jpg";
-
-				String keyName = amazonS3Util.generateKey() + fileName;
+				//String fileName = sb.toString() + ".jpg";
+                 String key=amazonS3Util.generateKey(sb.toString());
+				String keyName = key + ".jpg";
+				System.out.println("===keyname==="+keyName);
 				// upload file to amazon
 				try {
 					amazonS3Util.uploadFileToS3(keyName, file.getInputStream(), file.getOriginalFilename());
@@ -60,6 +61,7 @@ public class ProductImageController {
 				ProductImages productImages = new ProductImages();
 				productImages.setId(UUID.randomUUID().toString());
 				productImages.setUrl(keyName);
+				productImages.setThumbNail(key+"_thumb.jpg");
 				productImageService.saveUploadedImage(productImages);
 				return new ResponseEntity<ProductImages>(productImages, HttpStatus.OK);
 			} catch (Exception e) {

@@ -3,14 +3,16 @@ package com.product.dto.response;
 public class ProductStatusResponse {
 
 	private int views;
-	private int favs;
+
+	private boolean favs;
+
 	private int offers;
 
 	public int getViews() {
 		return views;
 	}
 
-	public int getFavs() {
+	public boolean isFavs() {
 		return favs;
 	}
 
@@ -22,7 +24,7 @@ public class ProductStatusResponse {
 		this.views = views;
 	}
 
-	public void setFavs(int favs) {
+	public void setFavs(boolean favs) {
 		this.favs = favs;
 	}
 

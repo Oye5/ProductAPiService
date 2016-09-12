@@ -56,14 +56,10 @@ public class AbstractDao<PK extends Serializable, T> {
 	protected void deleteProductStatusBasedOnProductId(String productId) {
 		String hql = "delete from ProductStatus where productId= :productId";
 		getSession().createQuery(hql).setString("productId", productId).executeUpdate();
-		// getSession().update(entity);
-
 	}
 
 	protected void deleteProductImagesBasedOnProductId(String productId) {
 		String hql = "delete from ProductImages where productId= :productId";
 		getSession().createQuery(hql).setString("productId", productId).executeUpdate();
-		// getSession().update(entity);
-
 	}
 }

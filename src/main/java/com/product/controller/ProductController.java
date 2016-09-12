@@ -5,14 +5,17 @@ import io.searchbox.core.Index;
 import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
 
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.elasticsearch.common.geo.GeoPoint;
 import org.elasticsearch.common.unit.DistanceUnit;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -27,16 +30,22 @@ import org.springframework.web.bind.annotation.RestController;
 import com.product.dto.request.ProductSaveRequest;
 import com.product.dto.request.ProductUpdateRequest;
 import com.product.dto.response.GenericResponse;
+import com.product.dto.response.GeoResponse;
+import com.product.dto.response.ProductImageResponse;
+import com.product.dto.response.ProductResponse;
 import com.product.dto.response.ProductStatusResponse;
+import com.product.dto.response.SellerResponse;
 import com.product.model.Geo;
 import com.product.model.Product;
 import com.product.model.ProductImages;
 import com.product.model.ProductStatus;
+import com.product.model.Seller;
 import com.product.model.User;
 import com.product.service.GeoService;
 import com.product.service.ProductImageService;
 import com.product.service.ProductService;
 import com.product.service.ProductStatusService;
+import com.product.service.SellerService;
 import com.product.util.ElasticUtil;
 
 /**
@@ -58,6 +67,9 @@ public class ProductController {
 	@Autowired
 	GeoService geoService;
 
+	@Autowired
+	SellerService sellerService;
+
 	private Product product;
 	private Geo geo;
 	private User user;
@@ -76,6 +88,8 @@ public class ProductController {
 			JestClient client = ElasticUtil.getClient();
 			// Iterating over Retrived data from database
 			for (Product product : productsList) {
+				GeoPoint gp = new GeoPoint(product.getGeo().getLattitude(), product.getGeo().getLongitude());
+				product.setLocation(gp);
 				Index index = new Index.Builder(product).index("product").type("Product").id(product.getProductId().toString()).build();
 				client.execute(index);
 			}
@@ -102,9 +116,14 @@ public class ProductController {
 			product = new Product();
 			geo = new Geo();
 			user = new User();
-			geo.setGeo_id(UUID.randomUUID().toString());
+			String id = UUID.randomUUID().toString();
+			geo.setGeo_id(id);
 			geo.setLattitude(productSaveRequest.getLattitude());
 			geo.setLongitude(productSaveRequest.getLongitude());
+
+			GeoPoint gp = new GeoPoint(productSaveRequest.getLattitude(), productSaveRequest.getLongitude());
+			product.setLocation(gp);
+
 			// if (productRequest.getGeoId() != 0) {
 			// geo.setGeo_id(productRequest.getGeoId());
 			// product.setGeo(geo);
@@ -125,8 +144,18 @@ public class ProductController {
 			product.setPrice(productSaveRequest.getPrice());
 			product.setProductId(UUID.randomUUID().toString());
 			product.setStatus(productSaveRequest.getStatus());
-			product.setCreatedAt(new Date());
-			product.setUpdatedAt(new Date());
+			product.setCountry(productSaveRequest.getCountry());
+			product.setAddress(productSaveRequest.getAddress());
+			product.setBrand(productSaveRequest.getBrand());
+			product.setWarranty(productSaveRequest.getWarranty());
+			product.setZipCode(productSaveRequest.getZipCode());
+			product.setState(productSaveRequest.getState());
+			product.setImageInformation(productSaveRequest.getImageInformation());
+			DateTime createdAt = new DateTime(productSaveRequest.getCreatedAt(), DateTimeZone.forID(null));
+			product.setCreatedAt(createdAt.toString());
+			DateTime updatedAt = new DateTime(productSaveRequest.getUpdatedAt(), DateTimeZone.forID(null));
+			product.setUpdatedAt(updatedAt.toString());
+
 			String productId = productService.saveProduct(product);
 			Product p = new Product();
 			p.setProductId(productId);
@@ -137,7 +166,6 @@ public class ProductController {
 				productImages.setProductId(p);
 				productImageService.saveUploadedImage(productImages);
 			}
-
 			// Index to elastic
 			JestClient client = ElasticUtil.getClient();
 			Index index = new Index.Builder(product).index("product").type("Product").id(product.getProductId().toString()).build();
@@ -176,32 +204,121 @@ public class ProductController {
 	 * @return
 	 */
 	@RequestMapping(value = "/v1", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> getProducts(@RequestParam("lattitude") Double lattitude, @RequestParam("longitude") Double longitude, @RequestParam("distance_type") String distance_type, @RequestParam("num_results") Integer num_results, @RequestParam("country_code") String country_code) {
+	public ResponseEntity<?> getProducts(@RequestParam(value = "q", required = false) String q, @RequestParam(value = "categoryId", required = false) String categoryId, @RequestParam("lattitude") Double lattitude, @RequestParam("longitude") Double longitude, @RequestParam("distance_type") String distance_type, @RequestParam(value = "distance", required = false) Double distance, @RequestParam("num_results") Integer num_results, @RequestParam(value = "sortby", required = false) String sortby) {
 		GenericResponse response = new GenericResponse();
-
+		if (categoryId != null) {
+			if (Integer.parseInt(categoryId) < 0 || Integer.parseInt(categoryId) > 8) {
+				response.setCode("C001");
+				response.setMessage("category id must be in between 0 and 8");
+				return new ResponseEntity<GenericResponse>(response, HttpStatus.BAD_REQUEST);
+			}
+		}
 		try {
+			List<Product> product;
+
+			// if(categoryId<0)
 
 			DistanceUnit distanceUnit = DistanceUnit.MILES;
 
-			if (distance_type != null && distance_type.equals("mile")) {
+			if (distance_type != null && distance_type.equalsIgnoreCase("mile")) {
 				distanceUnit = DistanceUnit.MILES;
-			} else if (distance_type != null && distance_type.equals("km")) {
+			} else if (distance_type != null && distance_type.equalsIgnoreCase("km")) {
 				distanceUnit = DistanceUnit.KILOMETERS;
 			}
-			List<Product> product;
-			QueryBuilder query = QueryBuilders.geoDistanceQuery("location").point(lattitude, longitude).distance(10, distanceUnit);
+
+			if (distance == null)
+				distance = 10.0d;
+
+			QueryBuilder query = null;// =QueryBuilders.boolQuery();
+
+			if (q != null && !q.equals("")) {
+				query = QueryBuilders.boolQuery().should(QueryBuilders.matchQuery("displayName", q));
+			}
+			if (categoryId != null && !categoryId.equals("")) {
+				if (query != null)
+					QueryBuilders.boolQuery().should(query).should(QueryBuilders.matchQuery("categoryId", categoryId));
+				else
+					query = QueryBuilders.boolQuery().should(QueryBuilders.matchQuery("categoryId", categoryId));
+			}
+
+			if (query != null)
+				query = QueryBuilders.boolQuery().should(query).should(QueryBuilders.geoDistanceQuery("location").point(longitude, lattitude).distance(distance, distanceUnit));
+			else
+				query = QueryBuilders.geoDistanceQuery("location").point(lattitude, longitude).distance(distance, DistanceUnit.MILES);
 
 			SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-			searchSourceBuilder.query(query);
+			searchSourceBuilder.query(query).size(num_results);
 
 			JestClient client = ElasticUtil.getClient();
 			Search search = new Search.Builder(searchSourceBuilder.toString()).addIndex("product").addType("Product").build();
 
 			SearchResult result = client.execute(search);
 			product = result.getSourceAsObjectList(Product.class);
+			// preparing response
+			List<ProductResponse> listProductResponse = new ArrayList<ProductResponse>();
+			ProductResponse productResponse = null;
+			for (int i = 0; i < product.size(); i++) {
+				productResponse = new ProductResponse();
+				productResponse.setProductId(product.get(i).getProductId());
+				productResponse.setBrand(product.get(i).getBrand());
+				productResponse.setCategoryId(product.get(i).getCategoryId());
+				productResponse.setCondition(product.get(i).getCondition());
+				productResponse.setCountry(product.get(i).getCountry());
+				productResponse.setCreatedAt(product.get(i).getCreatedAt());
+				productResponse.setCurrency(product.get(i).getCurrency());
+				productResponse.setDescription(product.get(i).getDescription());
+				productResponse.setDisplayName(product.get(i).getDisplayName());
+				productResponse.setDistance(distance);
+				productResponse.setLanguageCode(product.get(i).getLanguageCode());
+				productResponse.setPrice(product.get(i).getPrice());
+
+				productResponse.setState(product.get(i).getState());
+				productResponse.setStatus(product.get(i).getStatus());
+				productResponse.setUpdatedAt(product.get(i).getUpdatedAt());
+				productResponse.setWarranty(product.get(i).getWarranty());
+				productResponse.setZipCode(product.get(i).getZipCode());
+				productResponse.setImageInformation(product.get(i).getImageInformation());
+				// set geo details
+				GeoResponse geoResponse = new GeoResponse();
+				geoResponse.setCity(product.get(i).getGeo().getCity());
+				geoResponse.setCountryCode(product.get(i).getGeo().getCountryCode());
+
+				geoResponse.setLattitude(product.get(i).getGeo().getLattitude());
+				geoResponse.setLongitude(product.get(i).getGeo().getLongitude());
+				geoResponse.setZipCode(product.get(i).getGeo().getZipCode());
+				productResponse.setGeo(geoResponse);
+				// productResponse.setSeller(seller);
+				Seller seller = sellerService.getSellerById(product.get(i).getUser().getUserId());
+				if (seller != null) {
+					SellerResponse sellerResponse = new SellerResponse();
+					sellerResponse.setAvatar_url(seller.getProfilePic());
+					sellerResponse.setBanned(seller.getBanned());
+					sellerResponse.setCountry_code(seller.getCountryCode());
+					sellerResponse.setName(seller.getFirstName() + " " + seller.getLastName());
+					sellerResponse.setSellerId(product.get(i).getUser().getUserId());
+					sellerResponse.setStatus(seller.getStatus());
+					sellerResponse.setCity(seller.getCity());
+					productResponse.setSeller(sellerResponse);
+				}
+				// image
+				List<ProductImages> img = productImageService.getProductImagesByProductId(product.get(i).getProductId());
+				System.out.println("---size of image===" + img.size());
+				List<ProductImageResponse> listImageRes = new ArrayList<ProductImageResponse>();
+				ProductImageResponse imgRes = null;
+				for (int j = 0; j < img.size(); j++) {
+					imgRes = new ProductImageResponse();
+					imgRes.setId(img.get(j).getId());
+					imgRes.setUr(img.get(j).getUrl());
+					imgRes.setThumb_nail(img.get(j).getThumbNail());
+					listImageRes.add(imgRes);
+				}
+				productResponse.setImages(listImageRes);
+				listProductResponse.add(productResponse);
+
+			}
 			System.out.println("Elastic query " + searchSourceBuilder.toString());
 
-			return new ResponseEntity<List<Product>>(product, HttpStatus.OK);
+			return new ResponseEntity<List<ProductResponse>>(listProductResponse, HttpStatus.OK);
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -253,7 +370,7 @@ public class ProductController {
 	}
 
 	/**
-	 * upadate product details
+	 * update product details
 	 * 
 	 * @param productId
 	 * @param productUpdateRequest
@@ -273,10 +390,27 @@ public class ProductController {
 				return new ResponseEntity<GenericResponse>(response, HttpStatus.BAD_REQUEST);
 			}
 
+			// seller details
+			Seller seller = new Seller();
+			seller.setId(productUpdateRequest.getSeller().getId());
+			seller.setBanned(productUpdateRequest.getSeller().getBanned());
+			seller.setCity(productUpdateRequest.getSeller().getCity());
+			seller.setCountryCode(productUpdateRequest.getSeller().getCountry_code());
+			seller.setProfilePic(productUpdateRequest.getSeller().getProfile_pic_url());
+			seller.setStatus(productUpdateRequest.getSeller().getStatus());
+			seller.setZipCode(productUpdateRequest.getSeller().getZip_code());
+			try {
+				sellerService.updateSeller(seller);
+			} catch (Exception e) {
+				response.setCode("E001");
+				response.setMessage("seller id not found: " + e.getMessage());
+				e.printStackTrace();
+				return new ResponseEntity<GenericResponse>(response, HttpStatus.BAD_REQUEST);
+			}
 			product.setProductId(productId);
 			product.setCategoryId(productUpdateRequest.getCategoryId());
 			product.setCondition(productUpdateRequest.getCondition());
-			// product.setCreatedAt(createdAt);
+			product.setImageInformation(productUpdateRequest.getImageInformation());
 			product.setCurrency(productUpdateRequest.getCurrency());
 			product.setDescription(productUpdateRequest.getDescription());
 			product.setDisplayName(productUpdateRequest.getDisplayName());
@@ -289,11 +423,16 @@ public class ProductController {
 			geo.setZipCode(productUpdateRequest.getGeo().getZip_code());
 			geoService.updateGeo(geo);
 
+			GeoPoint gp = new GeoPoint(productUpdateRequest.getGeo().getLat(), productUpdateRequest.getGeo().getLongitude());
+			product.setLocation(gp);
+
 			product.setGeo(geo);
 			product.setLanguageCode(productUpdateRequest.getLanguageCode());
 			product.setPrice(productUpdateRequest.getPrice());
 			product.setStatus(productUpdateRequest.getStatus());
-			product.setUpdatedAt(new Date());
+			DateTime updatedAt = new DateTime(productUpdateRequest.getUpdatedAt(), DateTimeZone.forID(null));
+
+			product.setUpdatedAt(updatedAt.toString());
 			user = new User();
 			user.setUserId(productUpdateRequest.getSeller().getId());
 			product.setUser(user);
@@ -342,13 +481,13 @@ public class ProductController {
 		try {
 			ProductStatus productStatus = productStatusService.getProductStatus(productId);
 			if (productStatus != null) {
-				statusRespose.setFavs(productStatus.getFavourites());
+				statusRespose.setFavs(productStatus.isFavourites());
 				statusRespose.setOffers(productStatus.getOffers());
 				statusRespose.setViews(productStatus.getViews());
 				return new ResponseEntity<ProductStatusResponse>(statusRespose, HttpStatus.OK);
 			} else {
 				response.setCode("E001");
-				response.setMessage("ProductId is not found");
+				response.setMessage("product status for given ProductId is not found");
 				return new ResponseEntity<GenericResponse>(response, HttpStatus.NOT_FOUND);
 			}
 		} catch (Exception e) {
@@ -378,8 +517,12 @@ public class ProductController {
 			}
 
 			List<Product> productList = productService.getProductsByCategoryId(product.getCategoryId());
+			List<Product> responseResults = new ArrayList<Product>();
+			for (int i = 0; i < numResults && i < productList.size(); i++) {
+				responseResults.add(productList.get(i));
+			}
 
-			return new ResponseEntity<List<Product>>(productList, HttpStatus.OK);
+			return new ResponseEntity<List<Product>>(responseResults, HttpStatus.OK);
 		} catch (Exception ex) {
 			response.setCode("E001");
 			response.setMessage(ex.getMessage());
@@ -390,33 +533,48 @@ public class ProductController {
 	}
 
 	/**
-	 * search product by categoty name
+	 * mark product as favourites
 	 * 
-	 * @param query
+	 * @param productId
 	 * @return
 	 */
-	@RequestMapping(value = "/v1/searchProducts", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<Product>> viewItems(@RequestParam("q") String query) {
-
-		List<Product> product;
+	@RequestMapping(value = "/v1/makeFavourite", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> makeProductAsFavourite(@RequestParam("productId") String productId) {
+		GenericResponse response = new GenericResponse();
 		try {
-			// Creating Elastic Client
-			JestClient client = ElasticUtil.getClient();
-			SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-
-			searchSourceBuilder.query(QueryBuilders.queryStringQuery(query));
-			System.out.println("Elastic query " + searchSourceBuilder.toString());
-
-			Search search = new Search.Builder(searchSourceBuilder.toString()).addIndex("product").addType("Product").build();
-
-			SearchResult result = client.execute(search);
-			product = result.getSourceAsObjectList(Product.class);
-			return new ResponseEntity<List<Product>>(product, HttpStatus.OK);
+			ProductStatus productStatus = new ProductStatus();
+			Product product = new Product();
+			product.setProductId(productId);
+			productStatus.setProductId(product);
+			productStatus.setFavourites(true);
+			productStatusService.saveProductStatus(productStatus);
+			response.setCode("S001");
+			response.setMessage("product marked as favourites");
+			return new ResponseEntity<ProductStatus>(productStatus, HttpStatus.OK);
 		} catch (Exception ex) {
+			response.setCode("E001");
+			response.setMessage(ex.getMessage());
 			ex.printStackTrace();
-			return new ResponseEntity<List<Product>>(HttpStatus.UNPROCESSABLE_ENTITY);
+			return new ResponseEntity<GenericResponse>(response, HttpStatus.BAD_REQUEST);
 		}
 
 	}
 
+	//
+	@RequestMapping(value = "/v1/getFavouriteProducts", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> getFavouriteProducts() {
+		GenericResponse response = new GenericResponse();
+		try {
+			List<ProductStatus> productStatusList = productStatusService.getFavouriteProducts();
+			response.setCode("S001");
+			response.setMessage("product marked as favourites");
+			return new ResponseEntity<List<ProductStatus>>(productStatusList, HttpStatus.OK);
+		} catch (Exception ex) {
+			response.setCode("E001");
+			response.setMessage(ex.getMessage());
+			ex.printStackTrace();
+			return new ResponseEntity<GenericResponse>(response, HttpStatus.BAD_REQUEST);
+		}
+
+	}
 }
