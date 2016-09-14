@@ -67,6 +67,8 @@ public class User implements Serializable {
 		return userName;
 	}
 
+	@JsonIgnore
+	@JsonProperty(value = "password")
 	public String getPassword() {
 		return password;
 	}
@@ -86,14 +88,15 @@ public class User implements Serializable {
 	public boolean isActive() {
 		return active;
 	}
+
 	@JsonIgnore
-	@JsonProperty(value = "unreadNotifications")	
+	@JsonProperty(value = "unreadNotifications")
 	public int getUnreadNotifications() {
 		return unreadNotifications;
 	}
 
 	@JsonIgnore
-	@JsonProperty(value = "unreadMessages")	
+	@JsonProperty(value = "unreadMessages")
 	public int getUnreadMessages() {
 		return unreadMessages;
 	}

@@ -3,7 +3,8 @@ package com.product.dto.request;
 public class SellerRequest {
 
 	private String id;
-	private String name;
+	private String firstName;
+	private String lastName;
 	private String profile_pic_url;
 	private String country_code;
 	private String city;
@@ -15,8 +16,12 @@ public class SellerRequest {
 		return id;
 	}
 
-	public String getName() {
-		return name;
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
 	}
 
 	public String getProfile_pic_url() {
@@ -47,8 +52,12 @@ public class SellerRequest {
 		this.id = id;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 
 	public void setProfile_pic_url(String profile_pic_url) {

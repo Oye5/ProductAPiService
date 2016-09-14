@@ -26,9 +26,6 @@ public class ProductImages implements Serializable {
 	@JoinColumn(name = "product_id")
 	private Product productId;
 
-	@Column(name = "thumb_nail", length = 255)
-	private String thumbNail;
-
 	public String getId() {
 		return id;
 	}
@@ -51,14 +48,6 @@ public class ProductImages implements Serializable {
 
 	public void setProductId(Product productId) {
 		this.productId = productId;
-	}
-
-	public String getThumbNail() {
-		return thumbNail;
-	}
-
-	public void setThumbNail(String thumbNail) {
-		this.thumbNail = thumbNail;
 	}
 
 }

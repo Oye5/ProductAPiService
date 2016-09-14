@@ -1,25 +1,25 @@
 package com.product.dto.request;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class ProductSaveRequest {
+
 	private String description;
 	private String displayName;
 	private int categoryId;
 	private String languageCode;
 	private double price;
 	private String currency;
-	private String status;
+	private int status;
 	private String condition;
 	private String sellerId;
-	private String createdAt;
-	private String updatedAt;
+	// private String createdAt;
+	// private String updatedAt;
 	private double lattitude;
 	private double longitude;
 	private String country;
 
 	private String address;
+
+	private String city;
 
 	private String zipCode;
 
@@ -29,7 +29,7 @@ public class ProductSaveRequest {
 
 	private String brand;
 
-	private List<String> imageList = new ArrayList<String>();
+	// private List<String> imageList = new ArrayList<String>();
 
 	private String imageInformation;
 
@@ -57,10 +57,6 @@ public class ProductSaveRequest {
 		return currency;
 	}
 
-	public String getStatus() {
-		return status;
-	}
-
 	public String getCondition() {
 		return condition;
 	}
@@ -69,24 +65,12 @@ public class ProductSaveRequest {
 		return sellerId;
 	}
 
-	public String getCreatedAt() {
-		return createdAt;
-	}
-
-	public String getUpdatedAt() {
-		return updatedAt;
-	}
-
 	public double getLattitude() {
 		return lattitude;
 	}
 
 	public double getLongitude() {
 		return longitude;
-	}
-
-	public List<String> getImageList() {
-		return imageList;
 	}
 
 	public void setDescription(String description) {
@@ -113,7 +97,11 @@ public class ProductSaveRequest {
 		this.currency = currency;
 	}
 
-	public void setStatus(String status) {
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
 		this.status = status;
 	}
 
@@ -125,24 +113,12 @@ public class ProductSaveRequest {
 		this.sellerId = sellerId;
 	}
 
-	public void setCreatedAt(String createdAt) {
-		this.createdAt = createdAt;
-	}
-
-	public void setUpdatedAt(String updatedAt) {
-		this.updatedAt = updatedAt;
-	}
-
 	public void setLattitude(double lattitude) {
 		this.lattitude = lattitude;
 	}
 
 	public void setLongitude(double longitude) {
 		this.longitude = longitude;
-	}
-
-	public void setImageList(List<String> imageList) {
-		this.imageList = imageList;
 	}
 
 	public String getCountry() {
@@ -199,6 +175,14 @@ public class ProductSaveRequest {
 
 	public void setImageInformation(String imageInformation) {
 		this.imageInformation = imageInformation;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
 	}
 
 }
