@@ -4,7 +4,7 @@ public class ProductStatusResponse {
 
 	private int views;
 
-	private boolean favs;
+	private int favs;
 
 	private int offers;
 
@@ -12,7 +12,7 @@ public class ProductStatusResponse {
 		return views;
 	}
 
-	public boolean isFavs() {
+	public int getFavs() {
 		return favs;
 	}
 
@@ -24,7 +24,7 @@ public class ProductStatusResponse {
 		this.views = views;
 	}
 
-	public void setFavs(boolean favs) {
+	public void setFavs(int favs) {
 		this.favs = favs;
 	}
 

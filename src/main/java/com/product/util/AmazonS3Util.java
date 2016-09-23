@@ -1,7 +1,6 @@
 package com.product.util;
 
 import java.io.InputStream;
-import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -23,10 +22,9 @@ public class AmazonS3Util {
 	public String accessKeyId;// = "AKIAJLLUP2ENUSVLV46A";
 	@Value("${aws.s3.access.key}")
 	public String secretKey;// = "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";
-	@Value("${aws.s3.folder}")
-	public String folder;// = "product";
+	
 
-	public String uploadFileToS3(String key, InputStream ins, String fileName) throws AmazonServiceException, AmazonClientException {
+	public String uploadFileToS3(String key, InputStream ins, String fileName,String folder) throws AmazonServiceException, AmazonClientException {
 
 		AmazonS3Client s3client = new AmazonS3Client(new BasicAWSCredentials(accessKeyId, secretKey));
 
@@ -43,7 +41,7 @@ public class AmazonS3Util {
 		String y = x.substring(0, 2) + "/" + x.substring(2, x.length());
 		String z = y.substring(0, 5) + "/" + x.substring(4, x.length());
 		String a = z.substring(0, 8) + "/" + x.substring(6, x.length());
-		String b = a.substring(0, 11) + "/" + x.substring(8, x.length());
+		String b = a.substring(0, 11) + "/" + key;
 		return b;
 
 	}

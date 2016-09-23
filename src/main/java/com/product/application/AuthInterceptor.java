@@ -29,12 +29,16 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 			authId = multivaluedMap.get(AUTH_TOKEN);
 		}
 		// checking user for authID
-		Accounts account = accountService.getAccountByAuthToken(authId);
-		if (account == null) {
-			throw new AuthFailException("Empty or invalid authId found in header", 500);
-
-		} else {
+		if (httpRequest.getRequestURI().contains("/productapi/v1/get")) {
 			return true;
+		} else {
+			Accounts account = accountService.getAccountByAuthToken(authId);
+			if (account == null) {
+				throw new AuthFailException("Empty or invalid authId found in header", 500);
+
+			} else {
+				return true;
+			}
 		}
 	}
 

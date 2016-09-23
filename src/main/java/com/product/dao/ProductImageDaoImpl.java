@@ -33,7 +33,6 @@ public class ProductImageDaoImpl extends AbstractDao<String, ProductImages> impl
 	public List<ProductImages> getProductImagesByProductId(String productId) {
 		Criteria criteria = createEntityCriteria();
 		criteria.add(Restrictions.eq("productId.productId", productId));
-		System.out.println("==-=-=" + criteria);
 		return (List<ProductImages>) criteria.list();
 	}
 

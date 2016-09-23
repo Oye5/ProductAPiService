@@ -16,7 +16,6 @@ public class ProductStatusDaoImpl extends AbstractDao<Long, ProductStatus> imple
 		Criteria criteria = createEntityCriteria();
 		// Integer v = Integer.parseInt(productId);
 		criteria.add(Restrictions.eq("productId.productId", productId));
-		System.out.println("criteria=====" + criteria);
 		return (ProductStatus) criteria.uniqueResult();
 	}
 
@@ -36,8 +35,13 @@ public class ProductStatusDaoImpl extends AbstractDao<Long, ProductStatus> imple
 	public List<ProductStatus> getFavouriteProducts() {
 		Criteria criteria = createEntityCriteria();
 		criteria.add(Restrictions.eq("favourites", true));
-		System.out.println("criteria=====" + criteria);
 		return (List<ProductStatus>) criteria.list();
+	}
+
+	@Override
+	public void updateProductStatus(ProductStatus status) {
+		update(status);
+
 	}
 
 }

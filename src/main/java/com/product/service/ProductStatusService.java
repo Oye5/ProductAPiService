@@ -13,4 +13,6 @@ public interface ProductStatusService {
 	void saveProductStatus(ProductStatus productStatus);
 
 	List<ProductStatus> getFavouriteProducts();
+
+	void updateProductStatus(ProductStatus status);
 }

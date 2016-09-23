@@ -8,8 +8,6 @@ public interface ProductService {
 
 	String saveProduct(Product product);
 
-	List<Product> getProduct(double latitude, double longitude, String distance_type, int num_results, String country_code);
-
 	void updateProduct(Product product);
 
 	List<Product> findAllProducts();
@@ -19,4 +17,6 @@ public interface ProductService {
 	List<Product> getProductByProductId(String productId);
 	
 	List<Product> getProductsByCategoryId(int categoryId);
+	
+	List<Product> getProductByUserId(String sellerId);
 }

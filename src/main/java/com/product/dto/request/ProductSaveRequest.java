@@ -1,5 +1,8 @@
 package com.product.dto.request;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ProductSaveRequest {
 
 	private String description;
@@ -28,10 +31,10 @@ public class ProductSaveRequest {
 	private String warranty;
 
 	private String brand;
+	private int quantity;
 
-	// private List<String> imageList = new ArrayList<String>();
-
-	private String imageInformation;
+	private List<String> imageList = new ArrayList<String>();
+	private String thumbUrl;
 
 	public String getDescription() {
 		return description;
@@ -169,20 +172,36 @@ public class ProductSaveRequest {
 		this.brand = brand;
 	}
 
-	public String getImageInformation() {
-		return imageInformation;
-	}
-
-	public void setImageInformation(String imageInformation) {
-		this.imageInformation = imageInformation;
-	}
-
 	public String getCity() {
 		return city;
 	}
 
 	public void setCity(String city) {
 		this.city = city;
+	}
+
+	public int getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
+	}
+
+	public List<String> getImageList() {
+		return imageList;
+	}
+
+	public void setImageList(List<String> imageList) {
+		this.imageList = imageList;
+	}
+
+	public String getThumbUrl() {
+		return thumbUrl;
+	}
+
+	public void setThumbUrl(String thumbUrl) {
+		this.thumbUrl = thumbUrl;
 	}
 
 }

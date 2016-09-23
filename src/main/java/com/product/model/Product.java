@@ -71,19 +71,8 @@ public class Product implements Serializable {
 	@JoinColumn(name = "seller_id")
 	private User user;
 
-	// @Temporal(TemporalType.TIMESTAMP)
-	// @Column(name = "created_at")
-	// private Date createdAt;
-
 	@Column(name = "created_at")
 	private String createdAt;
-
-	@Column(name = "image_information", length = 200)
-	private String imageInformation;
-
-	// @Temporal(TemporalType.TIMESTAMP)
-	// @Column(name = "updated_at")
-	// private Date updatedAt;
 
 	@Column(name = "updated_at")
 	private String updatedAt;
@@ -105,6 +94,9 @@ public class Product implements Serializable {
 
 	@Column(name = "brand")
 	private String brand;
+
+	@Column(name = "quantity")
+	private int quantity;
 
 	@Transient
 	private GeoPoint location;
@@ -265,12 +257,12 @@ public class Product implements Serializable {
 		this.brand = brand;
 	}
 
-	public String getImageInformation() {
-		return imageInformation;
+	public int getQuantity() {
+		return quantity;
 	}
 
-	public void setImageInformation(String imageInformation) {
-		this.imageInformation = imageInformation;
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
 	}
 
 }

@@ -10,6 +10,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @Entity
 @Table(name = "product_status")
 public class ProductStatus implements Serializable {
@@ -21,13 +24,13 @@ public class ProductStatus implements Serializable {
 
 	@Id
 	@Column(name = "id")
-	private int Id;
+	private String Id;
 
 	@Column(name = "views")
 	private int views;
 
 	@Column(name = "favs")
-	private boolean favourites;
+	private int favourites;
 
 	@Column(name = "offers")
 	private int offers;
@@ -36,7 +39,7 @@ public class ProductStatus implements Serializable {
 	@JoinColumn(name = "product_id")
 	private Product productId;
 
-	public int getId() {
+	public String getId() {
 		return Id;
 	}
 
@@ -44,10 +47,12 @@ public class ProductStatus implements Serializable {
 		return views;
 	}
 
-	public boolean isFavourites() {
+	public int getFavourites() {
 		return favourites;
 	}
 
+	@JsonIgnore
+	@JsonProperty(value = "offers")
 	public int getOffers() {
 		return offers;
 	}
@@ -56,7 +61,7 @@ public class ProductStatus implements Serializable {
 		return productId;
 	}
 
-	public void setId(int id) {
+	public void setId(String id) {
 		Id = id;
 	}
 
@@ -64,7 +69,7 @@ public class ProductStatus implements Serializable {
 		this.views = views;
 	}
 
-	public void setFavourites(boolean favourites) {
+	public void setFavourites(int favourites) {
 		this.favourites = favourites;
 	}
 

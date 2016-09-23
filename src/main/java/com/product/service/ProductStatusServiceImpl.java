@@ -39,4 +39,10 @@ public class ProductStatusServiceImpl implements ProductStatusService {
 		return productStatusDao.getFavouriteProducts();
 	}
 
+	@Override
+	public void updateProductStatus(ProductStatus status) {
+		productStatusDao.updateProductStatus(status);
+		
+	}
+
 }

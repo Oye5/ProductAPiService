@@ -21,11 +21,6 @@ public class ProductServiceImpl implements ProductService {
 		return productDao.saveProduct(product);
 	}
 
-	@Override
-	public List<Product> getProduct(double latitude, double longitude, String distance_type, int num_results, String country_code) {
-		List<Product> productList = productDao.getProduct(latitude, longitude, distance_type, num_results, country_code);
-		return productList;
-	}
 
 	@Override
 	public void updateProduct(Product product) {
@@ -52,6 +47,12 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public List<Product> getProductsByCategoryId(int categoryId) {
 		return productDao.getProductsByCategoryId(categoryId);
+	}
+
+
+	@Override
+	public List<Product> getProductByUserId(String sellerId) {
+		return productDao.getProductByUserId(sellerId);
 	}
 
 }

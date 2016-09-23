@@ -17,17 +17,8 @@ public class ProductDaoImpl extends AbstractDao<Long, Product> implements Produc
 	}
 
 	@Override
-	public List<Product> getProduct(double latitude, double longitude, String distance_type, int num_results, String country_code) {
-		Criteria criteria = createEntityCriteria();
-		criteria.add(Restrictions.eq("geo.lat", latitude));
-		// return (User)criteria.uniqueResult();
-		return null;
-	}
-
-	@Override
 	public void updateProduct(Product product) {
 		update(product);
-		System.out.println("===update==");
 	}
 
 	@Override
@@ -54,6 +45,13 @@ public class ProductDaoImpl extends AbstractDao<Long, Product> implements Produc
 	public List<Product> getProductsByCategoryId(int categoryId) {
 		Criteria criteria = createEntityCriteria();
 		criteria.add(Restrictions.eq("categoryId", categoryId));
+		return (List<Product>) criteria.list();
+	}
+
+	@Override
+	public List<Product> getProductByUserId(String sellerId) {
+		Criteria criteria = createEntityCriteria();
+		criteria.add(Restrictions.eq("user.userId", sellerId));
 		return (List<Product>) criteria.list();
 	}
 
