@@ -5,17 +5,16 @@ import java.util.List;
 
 public class ProductSaveRequest {
 
+	private String productId;
 	private String description;
 	private String displayName;
 	private int categoryId;
 	private String languageCode;
 	private double price;
 	private String currency;
-	private int status;
+	private String status;
 	private String condition;
 	private String sellerId;
-	// private String createdAt;
-	// private String updatedAt;
 	private double lattitude;
 	private double longitude;
 	private String country;
@@ -100,11 +99,11 @@ public class ProductSaveRequest {
 		this.currency = currency;
 	}
 
-	public int getStatus() {
+	public String getStatus() {
 		return status;
 	}
 
-	public void setStatus(int status) {
+	public void setStatus(String status) {
 		this.status = status;
 	}
 
@@ -202,6 +201,14 @@ public class ProductSaveRequest {
 
 	public void setThumbUrl(String thumbUrl) {
 		this.thumbUrl = thumbUrl;
+	}
+
+	public String getProductId() {
+		return productId;
+	}
+
+	public void setProductId(String productId) {
+		this.productId = productId;
 	}
 
 }

@@ -54,8 +54,8 @@ public class Product implements Serializable {
 	@Size(max = 45)
 	private String currency;
 
-	@Column(name = "status")
-	private int status;
+	@Column(name = "status", length = 30)
+	private String status;
 
 	@Column(name = "conditions")
 	@Size(max = 45)
@@ -169,11 +169,11 @@ public class Product implements Serializable {
 		this.currency = currency;
 	}
 
-	public int getStatus() {
+	public String getStatus() {
 		return status;
 	}
 
-	public void setStatus(int status) {
+	public void setStatus(String status) {
 		this.status = status;
 	}
 
