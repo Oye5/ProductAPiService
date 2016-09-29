@@ -47,6 +47,7 @@ import com.product.dto.response.UserResponse;
 import com.product.model.FavouriteProducts;
 import com.product.model.Geo;
 import com.product.model.Product;
+import com.product.model.ProductChat;
 import com.product.model.ProductImages;
 import com.product.model.ProductStatus;
 import com.product.model.ProductTransaction;
@@ -426,11 +427,16 @@ public class ProductController {
 			// delete favourite product
 			favouriteProductService.deleteFavouriteProduct(productId);
 
+			List<ProductChat> list = chatService.getChatIdByProductId(productId);
+			System.out.println("===list11t===" + list);
+			// delete from conversations
+			System.out.println("lisoso====" + list);
+			convService.deleteConversations(list);
 			// delete chat messages
 			chatService.deleteChatMessages(productId);
-			// delete from conversations
-			convService.deleteConversations(productId);
 
+			// delete from product-tansaction
+			productTransactionService.deleteProductTransaction(productId);
 			// delect product from product table
 			productService.deleteProduct(product);
 
@@ -579,7 +585,7 @@ public class ProductController {
 	 * @param productId
 	 * @return
 	 */
-	@RequestMapping(value = "/v1/{productId}/stats", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/v1/get/{productId}/stats", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> productFavourites(@PathVariable("productId") String productId) {
 		GenericResponse response = new GenericResponse();
 		ProductStatusResponse statusRespose = new ProductStatusResponse();
@@ -611,7 +617,7 @@ public class ProductController {
 	 * @param numResults
 	 * @return
 	 */
-	@RequestMapping(value = "/v1/{productId}/similar", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/v1/get/{productId}/similar", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> getSimilarProducts(@PathVariable("productId") String productId, @RequestParam("num_results") Integer numResults) {
 		GenericResponse response = new GenericResponse();
 		try {
@@ -775,7 +781,7 @@ public class ProductController {
 
 	// http://52.43.30.248:8080/productapi/v1//{userid}/favourites/products/{productid}
 	@RequestMapping(value = "/v1/{userid}/favorites/products", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> getFavouriteProducts(@PathVariable("userid") String userId) {
+	public ResponseEntity<?> getFavouriteProducts(@PathVariable("userid") String userId, @RequestParam("num_results") Integer numResults) {
 		GenericResponse response = new GenericResponse();
 		try {
 			FavouriteProducts favouriteProducts = new FavouriteProducts();
@@ -786,7 +792,7 @@ public class ProductController {
 
 			List<ProductResponse> listProductResponse = new ArrayList<ProductResponse>();
 			ProductResponse productResponse = null;
-			for (int i = 0; i < listFavouriteProducts.size(); i++) {
+			for (int i = 0; i < listFavouriteProducts.size() && i < numResults; i++) {
 				productResponse = new ProductResponse();
 				productResponse.setCategory_id(listFavouriteProducts.get(i).getProductId().getCategoryId());
 				productResponse.setCreated_at(listFavouriteProducts.get(i).getProductId().getCreatedAt());
@@ -1115,6 +1121,6 @@ public class ProductController {
 			response.setMessage(e.getMessage());
 			return new ResponseEntity<GenericResponse>(response, HttpStatus.BAD_REQUEST);
 		}
-
 	}
+
 }
