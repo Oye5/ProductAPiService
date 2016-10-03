@@ -30,7 +30,12 @@ public class ProductConversationsServiceImpl implements ProductConversationsServ
 	@Override
 	public void deleteConversations(List<ProductChat> list) {
 		convDao.deleteConversations(list);
-		
+
+	}
+
+	@Override
+	public List<ProductConversations> getConversationsByUserId(String userId) {
+		return convDao.getConversationsByUserId(userId);
 	}
 
 }

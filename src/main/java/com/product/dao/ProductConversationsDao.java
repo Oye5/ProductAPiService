@@ -12,4 +12,6 @@ public interface ProductConversationsDao {
 	List<ProductConversations> getConversationById(String chatId);
 
 	void deleteConversations(List<ProductChat> list);
+
+	List<ProductConversations> getConversationsByUserId(String userId);
 }

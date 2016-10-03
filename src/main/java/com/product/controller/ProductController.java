@@ -107,7 +107,7 @@ public class ProductController {
 	UserService userService;
 
 	@Autowired
-	SetProductResponse SetproductResponse;
+	SetProductResponse setproductResponse;
 
 	@Autowired
 	ProductChatService chatService;
@@ -387,7 +387,7 @@ public class ProductController {
 			SearchResult result = client.execute(search);
 			product = result.getSourceAsObjectList(Product.class);
 			// preparing response
-			List<ProductResponse> listProductResponse = SetproductResponse.prepareResponse(product);
+			List<ProductResponse> listProductResponse = setproductResponse.prepareResponse(product);
 			System.out.println("Elastic query " + searchSourceBuilder.toString());
 
 			return new ResponseEntity<List<ProductResponse>>(listProductResponse, HttpStatus.OK);
@@ -977,7 +977,7 @@ public class ProductController {
 			SearchResult result = client.execute(search);
 			Product product = result.getSourceAsObject(Product.class);
 			if (product != null) {
-				ProductResponse productResponse = SetproductResponse.prepareResponse(product);
+				ProductResponse productResponse = setproductResponse.prepareResponse(product);
 				return new ResponseEntity<ProductResponse>(productResponse, HttpStatus.OK);
 			} else {
 				response.setCode("V001");
@@ -1045,7 +1045,7 @@ public class ProductController {
 		GenericResponse response = new GenericResponse();
 		try {
 			List<Product> productList = productService.getProductByUserId(userId);
-			List<ProductResponse> productResponse = SetproductResponse.prepareResponse(productList);
+			List<ProductResponse> productResponse = setproductResponse.prepareResponse(productList);
 			return new ResponseEntity<List<ProductResponse>>(productResponse, HttpStatus.OK);
 		} catch (Exception e) {
 			response.setCode("E001");
@@ -1095,6 +1095,9 @@ public class ProductController {
 			String result = productTransactionService.saveBuyingDetails(productTransaction);
 			if (result != null) {
 				product.setQuantity(product.getQuantity() - 1);
+				if (product.getQuantity() == 0) {
+					product.setStatus("out of stock");
+				}
 				productService.updateProduct(product);
 			}
 			ProductTransactionResponse transactionResponse = new ProductTransactionResponse();

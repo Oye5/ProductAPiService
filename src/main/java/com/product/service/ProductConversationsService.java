@@ -12,5 +12,6 @@ public interface ProductConversationsService {
 	List<ProductConversations> getConversationById(String chatId);
 	
 	void deleteConversations(List<ProductChat> list);
-	//List<ProductConversations> getConversationByUserId(String userId);
+
+	List<ProductConversations> getConversationsByUserId(String userId);
 }

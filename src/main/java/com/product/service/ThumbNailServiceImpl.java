@@ -13,11 +13,11 @@ public class ThumbNailServiceImpl implements ThumbNailService {
 
 	@Autowired
 	ThumbNailDao thumbNailDao;
-	
+
 	@Override
 	public void saveThumbNail(ThumbNail thumb) {
 		thumbNailDao.saveThumbNail(thumb);
-		
+
 	}
 
 	@Override
@@ -28,9 +28,7 @@ public class ThumbNailServiceImpl implements ThumbNailService {
 	@Override
 	public void deleteThumbNail(String productId) {
 		thumbNailDao.deleteThumbNail(productId);
-		
-	}
 
-	
+	}
 
 }
